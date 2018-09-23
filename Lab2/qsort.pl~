@@ -14,4 +14,4 @@ qsort([H|T],S):-part(H,T,L,R),
 		qsort(R,S2),
 		append(S1,[H|S2],S).
 
-%qsort([1,0,9,3,7], X). X = [0,1,3,7,9]
+

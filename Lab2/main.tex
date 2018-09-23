@@ -1,0 +1,265 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{filecontents}
+
+\title{TDDD08 - Exercise 2}
+\author{Valerio Colitta (950714-T639) valco263@student.liu.se\\Théo Foray (980410-T096) thefo365@student.liu.se}
+\date{September 2018}
+
+% --- ugly internals for language definition ---
+%
+\makeatletter
+
+% initialisation of user macros
+\newcommand\PrologPredicateStyle{}
+\newcommand\PrologVarStyle{}
+\newcommand\PrologAnonymVarStyle{}
+\newcommand\PrologAtomStyle{}
+\newcommand\PrologOtherStyle{}
+\newcommand\PrologCommentStyle{}
+
+% useful switches (to keep track of context)
+\newif\ifpredicate@prolog@
+\newif\ifwithinparens@prolog@
+
+% save definition of underscore for test
+\lst@SaveOutputDef{`_}\underscore@prolog
+
+% local variables
+\newcount\currentchar@prolog
+
+\newcommand\@testChar@prolog%
+{%
+  % if we're in processing mode...
+  \ifnum\lst@mode=\lst@Pmode%
+    \detectTypeAndHighlight@prolog%
+  \else
+    % ... or within parentheses
+    \ifwithinparens@prolog@%
+      \detectTypeAndHighlight@prolog%
+    \fi
+  \fi
+  % Some housekeeping...
+  \global\predicate@prolog@false%
+}
+
+% helper macros
+\newcommand\detectTypeAndHighlight@prolog
+{%
+  % First, assume that we have an atom.
+  \def\lst@thestyle{\PrologAtomStyle}%
+  % Test whether we have a predicate and modify the style accordingly.
+  \ifpredicate@prolog@%
+    \def\lst@thestyle{\PrologPredicateStyle}%
+  \else
+    % Test whether we have a predicate and modify the style accordingly.
+    \expandafter\splitfirstchar@prolog\expandafter{\the\lst@token}%
+    % Check whether the identifier starts by an underscore.
+    \expandafter\ifx\@testChar@prolog\underscore@prolog%
+      % Check whether the identifier is '_' (anonymous variable)
+      \ifnum\lst@length=1%
+        \let\lst@thestyle\PrologAnonymVarStyle%
+      \else
+        \let\lst@thestyle\PrologVarStyle%
+      \fi
+    \else
+      % Check whether the identifier starts by a capital letter.
+      \currentchar@prolog=65
+      \loop
+        \expandafter\ifnum\expandafter`\@testChar@prolog=\currentchar@prolog%
+          \let\lst@thestyle\PrologVarStyle%
+          \let\iterate\relax
+        \fi
+        \advance \currentchar@prolog by 1
+        \unless\ifnum\currentchar@prolog>90
+      \repeat
+    \fi
+  \fi
+}
+\newcommand\splitfirstchar@prolog{}
+\def\splitfirstchar@prolog#1{\@splitfirstchar@prolog#1\relax}
+\newcommand\@splitfirstchar@prolog{}
+\def\@splitfirstchar@prolog#1#2\relax{\def\@testChar@prolog{#1}}
+
+% helper macro for () delimiters
+\def\beginlstdelim#1#2%
+{%
+  \def\endlstdelim{\PrologOtherStyle #2\egroup}%
+  {\PrologOtherStyle #1}%
+  \global\predicate@prolog@false%
+  \withinparens@prolog@true%
+  \bgroup\aftergroup\endlstdelim%
+}
+
+% language name
+\newcommand\lang@prolog{Prolog-pretty}
+% ``normalised'' language name
+\expandafter\lst@NormedDef\expandafter\normlang@prolog%
+  \expandafter{\lang@prolog}
+
+% language definition
+\expandafter\expandafter\expandafter\lstdefinelanguage\expandafter%
+{\lang@prolog}
+{%
+  language            = Prolog,
+  keywords            = {},      % reset all preset keywords
+  showstringspaces    = false,
+  alsoletter          = (,
+  alsoother           = @$,
+  moredelim           = **[is][\beginlstdelim{(}{)}]{(}{)},
+  MoreSelectCharTable =
+    \lst@DefSaveDef{`(}\opparen@prolog{\global\predicate@prolog@true\opparen@prolog},
+}
+
+% Hooking into listings to test each ``identifier''
+\newcommand\@ddedToOutput@prolog\relax
+\lst@AddToHook{Output}{\@ddedToOutput@prolog}
+
+\lst@AddToHook{PreInit}
+{%
+  \ifx\lst@language\normlang@prolog%
+    \let\@ddedToOutput@prolog\@testChar@prolog%
+  \fi
+}
+
+\lst@AddToHook{DeInit}{\renewcommand\@ddedToOutput@prolog{}}
+
+\makeatother
+%
+% --- end of ugly internals ---
+
+
+% --- definition of a custom style similar to that of Pygments ---
+% custom colors
+\definecolor{PrologPredicate}{RGB}{000,031,255}
+\definecolor{PrologVar}      {RGB}{024,021,125}
+\definecolor{PrologAnonymVar}{RGB}{000,127,000}
+\definecolor{PrologAtom}     {RGB}{186,032,032}
+\definecolor{PrologComment}  {RGB}{063,128,127}
+\definecolor{PrologOther}    {RGB}{000,000,000}
+
+% redefinition of user macros for Prolog style
+\renewcommand\PrologPredicateStyle{\color{PrologPredicate}}
+\renewcommand\PrologVarStyle{\color{PrologVar}}
+\renewcommand\PrologAnonymVarStyle{\color{PrologAnonymVar}}
+\renewcommand\PrologAtomStyle{\color{PrologAtom}}
+\renewcommand\PrologCommentStyle{\itshape\color{PrologComment}}
+\renewcommand\PrologOtherStyle{\color{PrologOther}}
+
+% custom style definition 
+\lstdefinestyle{Prolog-pygsty}
+{
+  language     = Prolog-pretty,
+  upquote      = true,
+  stringstyle  = \PrologAtomStyle,
+  commentstyle = \PrologCommentStyle,
+  literate     =
+    {:-}{{\PrologOtherStyle :-}}2
+    {,}{{\PrologOtherStyle ,}}1
+    {.}{{\PrologOtherStyle .}}1
+}
+
+% global settings
+\lstset
+{
+  captionpos = below,
+  frame      = single,
+  columns    = fullflexible,
+  basicstyle = \ttfamily,
+}
+
+
+\begin{document}
+
+\maketitle
+
+\section{Exercise 2.1 - Sorting}
+This exercise devides into many sub-exercises.
+\subsection{issorted}
+The first one, asks to test whether a given list is sorted in ascending order. The main idea of the program is to check elements in pair. If \texttt{i $>$ i+1} $\forall i \texttt{ in } L$, then I know for sure that L is sorted.
+\setcounter{lstlisting}{0}
+\lstinputlisting[
+  style      = Prolog-pygsty,
+  caption    = {Ex 2.1},
+]{issorted.pl}
+%Aggiugni il programma%
+\subsection{ssort and qsort}
+This first subprogram asks to create a procedure that performs a selection sort algorithm. The algorithm itself, it's easy since given the minimum of a list, what is needed is to swap it with the head of the list, and recursively call the procedure. At the end of it the list will be sorted. However, we cannot do any side effect on the list, so we must create a new one, with the min element removed, and then call the recursive procedure on this new list.\clearpage
+\setcounter{lstlisting}{1}
+\lstinputlisting[
+  style      = Prolog-pygsty,
+  caption    = {Ex 2.2},
+]{ssort.pl}
+This other one proceeds in the same way. Since we cannot modify the list, we need to create two additional procedure to partition the list, and call qsort on them. Then, after their execution we will have two sorted sublists, that need to be appended to the firstly selected element.
+\setcounter{lstlisting}{2}
+\lstinputlisting[
+  style      = Prolog-pygsty,
+  caption    = {Ex 2.3},
+]{qsort.pl}
+\section{Exercise 2.2 - Search Strategies}
+Here, we have to see how the order of both the premises and the clauses affects the computation of the unification. The queries we need to test are the following: \\ \\
+\texttt{middle(X,[a,b,c])}\\ 
+and\\
+\texttt{middle(a, X)}\\
+\subsection{}
+First the normal execution, where all the things are in the way they should be, according to Prolog selection rule.\\
+    \texttt{middle(X, [X]).\\
+        middle(X, [First|Xs]) :- append(Middle, [Last], Xs),\\
+        \hspace*{4.45cm} middle(X, Middle).}\\
+The execution of the first query works as expected. The program calls the append and removes both the head and the tail recursively, until it finds that only one element (b), is inside the list.\\ \\ %Aggiungi disegno%
+The second query, instead, produces an infinite number of answers, because it's trying to find all the possible lists that have a as the middle element, and this, we have an infinite derivation tree.\\
+%Aggiungi disegno%
+\subsection{}
+In this case, we reverse just the order of the second rule, getting : \\ \\
+\texttt{middle(X, [X]).\\
+        middle(X, [First|Xs]) :- middle(X, Middle),\\
+        \hspace*{4.45cm} append(Middle, [Last], Xs).}
+\\ \\
+Both the queries work the same way as before. Thinks about the redo.
+\subsection{}
+Now we invert the clauses, getting:\\
+\texttt{middle(X, [First|Xs]) :- append(Middle, [Last], Xs),\\
+        \hspace*{4.45cm} middle(X, Middle).\\
+        middle(X, [X]).}\\
+The first query works, because, it first matches the first clause, getting middle(X, [b]), that than will match again, but since Xs is empty, the append call will fail. The second clause then is selected, assigning X the value b as expected.\\ \\
+The second query 
+
+\section{Exercise 2.3 - Abstract Machine}
+
+\section{Exercise 2.4 - Set Relations}
+For this exercise we have to build predicates that perform set union, intersection and powerset on sets. We also have to sort the final relation.
+\subsection{inter}
+Given two sets, the strategy is to check for each element of the first one, whether it is also in the second set. If it's in, then we add it to the resulting list.
+\setcounter{lstlisting}{3}
+\lstinputlisting[
+  style      = Prolog-pygsty,
+  caption    = {Ex 2.6},
+]{intersection.pl}
+\subsection{union}
+We need to have in \texttt{L3} the union of \texttt{L1} and \texttt{L2}.\\
+The union scans the first list, and checks whether the current element is in the second list. It that is the case, then we can skip it, otherwise we add it in the new one. Whenever the first list is empty, we just append the new one the second list. This way in the new list we have L2 plus all the elements not in common between L1 and L2, i.e. the union. \\ \\
+\setcounter{lstlisting}{4}
+\lstinputlisting[
+  style      = Prolog-pygsty,
+  caption    = {Ex 2.6},
+]{union.pl}
+\subsection{powerset}
+To create the powerset, we need to use the unification feature of logic programming. Given a list, we have two possibilities:\\
+\begin{itemize}
+    \item If N = 0, return the empty list
+    \item If N $>$ 0 :
+    \begin{itemize}
+        \item Add the element to a list and go on
+        \item Drop the element and go on
+    \end{itemize}
+\end{itemize}
+With this logic, we can get all the possible subsets of a set (i.e. the powerset).\\
+As a result we have a set of sets, orderd in ascending order.
+\setcounter{lstlisting}{5}
+\lstinputlisting[
+  style      = Prolog-pygsty,
+  caption    = {Ex 2.6},
+]{powset.pl}
+\end{document}

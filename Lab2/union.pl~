@@ -12,4 +12,4 @@ union(S1,S2,U) :- union(S1,S2,K), sort(K,U).
 memberl(X, [X|_]).
 memberl(X, [H|T]) :- memberl(X, T).
 
-%union([b,c,a], [a,g,k,b], K). K = [a,b,c,g,k]
+%union([b,c,a], [a,g,k,b])
