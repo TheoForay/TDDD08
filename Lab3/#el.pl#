@@ -18,7 +18,6 @@ factor(X+Y) --> term(X), [+], factor(Y).
 factor(X) --> term(X).
 term(num(Y)) --> [Y], {number(Y)}.
 term(X) --> [X], {nonvar(X)}.
-term(id(X)) --> [X], {nonvar(X)}.
 id(X) --> [X], {nonvar(X)}.
 id(id(X)) --> [X], {nonvar(X)}.
 
