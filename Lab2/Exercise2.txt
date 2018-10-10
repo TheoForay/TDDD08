@@ -1,0 +1,26 @@
+actual 2.2:
+The first query gives the right answer but then loops forever. The reason is: even if the recursive call is done first, it matches the first clause after the first splits of the list.
+But then, because it will call middle first (because of the order of the premises and the Prolog selection rule), it will derive it with the new possibilities and add the 
+corresponding append (with its new variables) but can't end.
+
+actual 2.3:
+The second query doesn't give all the possibilities: it misses the first one, where a is the only element of the list, because the first clause of the program (with append) will match
+before, so it will append possible variables to the empty list, before trying to see if it is a possible answser.
+
+2.4:
+For both queries it will loop here. The reason is the same than for the second query of 2.2, but we don't even find the base case because it is declared after the recursive call clause.
+
+
+
+For both queries, the preferable version is the first one, because we are insurred we can't loop because of the order of the premises, and because if there is the base case,
+it will be found first too, thanks to the order of the clauses.
+
+
+
+
+
+
+
+
+*Swap 2.2§ and 2.3§ after adding this, so it fits the order of the trees*
+*Change the numbers for ex2 maybe to 2.2.1, 2.2.2, ... because 2.4 already exists*
