@@ -29,12 +29,21 @@ scan([C|Cs],[T|Ts]):-
 	name(T,[C]),
 	operator(T),!,
 	scan(Cs,Ts).
-scan([C|Cs],[T|Ts]) :-
+/*scan([C|Cs],[T|Ts]) :-
 	letter(C),
 	scan_key_or_id(Cs,Cs1,CWord),
 	name(Word,[C|CWord]),
 	classify(Word,T),
-	scan(Cs1,Ts).
+	scan(Cs1,Ts).*/
+
+scan([C|Cs], [T|Ts]) :-
+    letter(C),
+    scan_key_or_id(Cs,Cs1,CWord),
+    (scan_key_or_id(Cs,[C1,C2|_],_),
+     name(:=, [C1,C2])->
+	 (name(T,[C|CWord]));
+    (name(Word, [C|CWord]), classify(Word,T))),
+    scan(Cs1,Ts).
 
 % scaning a number
 % scan_number(+In, -Out, -Num)
