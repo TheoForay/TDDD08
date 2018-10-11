@@ -35,8 +35,5 @@ set2(I,R,[H,H1|T],[H,H1|Z]) :- set2(I,R,T,Z).
 
 %[x=3]
 /*
-seq(set(y,num(1)),
-while(x > num(1),
-seq(set(y, id(y) * id(x)),
-set(x, id(x) - num(1)))))
+seq(set(y,num(1)),while(x > num(1),seq(set(y, id(y) * id(x)),set(x, id(x) - num(1)))))
 */

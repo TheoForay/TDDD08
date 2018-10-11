@@ -32,11 +32,3 @@ id2(X,[H,H1|T],Z) :- id2(X,T,Z).
 set2(I,R,[I,_|T],[I,R|T]).
 set2(I,R,F,Z) :- \+member(I,F), append(F,[I,R],Z).
 set2(I,R,[H,H1|T],[H,H1|Z]) :- set2(I,R,T,Z).
-
-%[x=3]
-/*
-seq(set(y,num(1)),
-while(x > num(1),
-seq(set(y, id(y) * id(x)),
-set(x, id(x) - num(1)))))
-*/

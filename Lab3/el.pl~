@@ -17,6 +17,7 @@ factor(X+Y) --> term(X), [+], factor(Y).
 factor(X) --> term(X).
 term(num(Y)) --> [Y], {number(Y)}.
 term(X) --> [X], {nonvar(X)}.
+<<<<<<< HEAD
 id(X) --> [X], {nonvar(X)}.
 
 %parse(T,O) : T = Tokens, O = Output program object
@@ -25,10 +26,21 @@ parse(Tokens, Out) :- pgm(Out, Tokens, []).
 %run(I,S,O) : I = Initial Environment, S = String to be parsed,
 %             O = Output Environment
 run(In, String, Out) :-
-			scan(String, Tokens),
-			parse(Tokens, AbstStx),
-			execute(AbstStx, In, Out).
+=======
+term(id(X)) --> [X], {nonvar(X)}.
+id(X) --> [X], {nonvar(X)}.
+id(id(X)) --> [X], {nonvar(X)}.
 
+
+parse(Tokens, Out) :- pgm(Out, Tokens, []).
+
+run(In, String, AbstStx) :-
+>>>>>>> 5dc81ae71b5622889fb243604c7573a70b8d9ad8
+scan(String, Tokens),
+parse(Tokens, AbstStx),
+execute(AbstStx, In, Out).
+
+<<<<<<< HEAD
 /*
 Example query:
 -----------------------------------------------------------
@@ -36,3 +48,8 @@ run([x,3],"y:=1; z:=0; while x>z do z:=z+1; y:=y*z od",Res).
 Res = [x,3,y,6,z,3]
 */
 
+=======
+%run([x=3],"y:=1; z:=0; while x>z do z:=z+1; y:=y*z od",Res).
+%run([x=3],"y:=1",Res).
+%run([x=3},"x:=1",Res).
+>>>>>>> 5dc81ae71b5622889fb243604c7573a70b8d9ad8
