@@ -1,0 +1,7 @@
+init_state(s(3,3,0,0)).
+
+%final state
+goal(s(0,0,3,3)).
+
+%moving characters by respecting the condition
+move
