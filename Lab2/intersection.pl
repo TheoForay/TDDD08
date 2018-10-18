@@ -13,4 +13,4 @@ memberl(X, [H|T]) :- memberl(X, T).
 %and then sorts the resulting list and put it in I
 inter(S1,S2,I) :- inter1(S1,S2,K), sort(K,I).
 
-%inter([g,a,o],[g,a],X). X = [a,g]
+%inter([a,g,o],[a,g],X). X = [a,g]
