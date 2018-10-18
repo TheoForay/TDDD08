@@ -6,10 +6,10 @@ unionl([H|T], S2, [H|TU]) :- \+memberl(H, S2), unionl(T, S2, TU).
 
 %union(S1,S2,U) - Performs the union of S1 and S2
 %and sorts it into U
-union(S1,S2,U) :- union(S1,S2,K), sort(K,U).
+union(S1,S2,U) :- unionl(S1,S2,K), sort(K,U).
 
 %memberl(X, L) - is True if X is a member of the list L
 memberl(X, [X|_]).
 memberl(X, [H|T]) :- memberl(X, T).
 
-%union([b,c,a], [a,g,k,b], K). K = [a,b,c,g,k]
+%union([a,b,c], [a,b,g,k], K). K = [a,b,c,g,k]
